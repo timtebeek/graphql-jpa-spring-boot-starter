@@ -28,13 +28,29 @@ public class GraphQLControllerTest {
 	TestRestTemplate rest;
 
 	@Test
-	public void testGraphQl() {
+	public void testGraphql() {
 		GraphQLInputQuery query = new GraphQLInputQuery();
 		query.setQuery("{Book(title: \"" + WAR_AND_PEACE + "\"){title genre}}");
-		
+
 		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
 		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
-		
+
+		Result result = entity.getBody();
+		Assert.assertNotNull(result);
+		Assert.assertTrue(result.getErrors().toString(), result.getErrors().isEmpty());
+		Assert.assertEquals(WAR_AND_PEACE, result.getData().get("Book").get(0).get("title"));
+		Assert.assertEquals("{Book=[{title=War and Peace, genre=NOVEL}]}", result.getData().toString());
+	}
+
+	@Test
+	public void testGraphqlArguments() {
+		GraphQLInputQuery query = new GraphQLInputQuery();
+		query.setQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
+		query.setVariables("{\"title\": \"" + WAR_AND_PEACE + "\"}");
+
+		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
+		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
+
 		Result result = entity.getBody();
 		Assert.assertNotNull(result);
 		Assert.assertTrue(result.getErrors().toString(), result.getErrors().isEmpty());
