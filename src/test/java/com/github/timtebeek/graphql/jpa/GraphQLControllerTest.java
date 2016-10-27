@@ -1,5 +1,6 @@
 package com.github.timtebeek.graphql.jpa;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +47,8 @@ public class GraphQLControllerTest {
 	public void testGraphqlArguments() {
 		GraphQLInputQuery query = new GraphQLInputQuery();
 		query.setQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
-		query.setVariables("{\"title\": \"" + WAR_AND_PEACE + "\"}");
+		query.setVariables(new HashMap<>());
+		query.getVariables().put("title", WAR_AND_PEACE);
 
 		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
 		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
