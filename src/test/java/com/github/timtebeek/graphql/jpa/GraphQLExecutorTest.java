@@ -54,16 +54,4 @@ public class GraphQLExecutorTest {
 		Assert.assertEquals(WAR_AND_PEACE, ((Map<String, List<Map<String, Object>>>) result.getData()).get("Book").get(0).get("title"));
 		Assert.assertEquals("{Book=[{title=War and Peace, genre=NOVEL}]}", result.getData().toString());
 	}
-
-	@Test
-	@SuppressWarnings("unchecked")
-	public void queryArgumentsLongId() {
-		Map<String, Object> args = new HashMap<>();
-		args.put("bookid", Long.valueOf(2));
-		String query = "query BookQuery($bookid: Long!){Book(id: $bookid){title genre}}";
-		ExecutionResult result = graphqlExecutor.execute(query, args);
-		Assert.assertTrue(result.getErrors().toString(), result.getErrors().isEmpty());
-		Assert.assertEquals(WAR_AND_PEACE, ((Map<String, List<Map<String, Object>>>) result.getData()).get("Book").get(0).get("title"));
-		Assert.assertEquals("{Book=[{title=War and Peace, genre=NOVEL}]}", result.getData().toString());
-	}
 }
