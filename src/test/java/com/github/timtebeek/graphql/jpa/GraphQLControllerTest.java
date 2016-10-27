@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.github.timtebeek.graphql.jpa.GraphQLController.GraphQLInputQuery;
+
 import graphql.ExecutionResult;
 import graphql.GraphQLError;
 import lombok.Value;

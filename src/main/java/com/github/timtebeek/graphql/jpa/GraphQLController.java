@@ -22,10 +22,10 @@ public class GraphQLController {
 	public ExecutionResult graphql(@RequestBody final GraphQLInputQuery query) throws Exception {
 		return graphQLExecutor.execute(query.getQuery(), query.getVariables());
 	}
-}
 
-@Data
-class GraphQLInputQuery {
-	String query;
-	Map<String, Object> variables;
+	@Data
+	public static class GraphQLInputQuery {
+		String query;
+		Map<String, Object> variables;
+	}
 }
