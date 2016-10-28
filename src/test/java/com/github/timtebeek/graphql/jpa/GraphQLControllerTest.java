@@ -1,70 +1,89 @@
 package com.github.timtebeek.graphql.jpa;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import org.junit.Assert;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Data;
+import org.crygier.graphql.GraphQLExecutor;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.github.timtebeek.graphql.jpa.GraphQLController.GraphQLInputQuery;
-
-import graphql.ExecutionResult;
-import graphql.GraphQLError;
-import lombok.Value;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest(controllers = GraphQLController.class)
 public class GraphQLControllerTest {
-	private static final String WAR_AND_PEACE = "War and Peace";
-
 	@Autowired
-	TestRestTemplate rest;
+	MockMvc			mockmvc;
+	@MockBean
+	GraphQLExecutor	executor;
+	@Autowired
+	ObjectMapper	mapper;
 
+	private void ok(final Query query) throws Exception, JsonProcessingException {
+		perform(query).andExpect(status().isOk());
+	}
+
+	private ResultActions perform(final Query query) throws Exception, JsonProcessingException {
+		return mockmvc.perform(post("/graphql").content(mapper.writeValueAsString(query)).contentType(MediaType.APPLICATION_JSON));
+	}
+
+	// Serialize a Query object
 	@Test
-	public void testGraphql() {
-		GraphQLInputQuery query = new GraphQLInputQuery();
-		query.setQuery("{Book(title: \"" + WAR_AND_PEACE + "\"){title genre}}");
-
-		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
-		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
-
-		Result result = entity.getBody();
-		Assert.assertNotNull(result);
-		Assert.assertTrue(result.getErrors().toString(), result.getErrors().isEmpty());
-		Assert.assertEquals(WAR_AND_PEACE, result.getData().get("Book").get(0).get("title"));
-		Assert.assertEquals("{Book=[{title=War and Peace, genre=NOVEL}]}", result.getData().toString());
+	public void testGraphqlQuery() throws Exception {
+		ok(new Query("{Book(title: \"title\"){title genre}}"));
 	}
 
 	@Test
-	public void testGraphqlArguments() {
-		GraphQLInputQuery query = new GraphQLInputQuery();
-		query.setQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
-		query.setVariables(new HashMap<>());
-		query.getVariables().put("title", WAR_AND_PEACE);
+	public void testGraphqlQueryNull() throws Exception {
+		perform(new Query(null)).andExpect(status().isBadRequest());
+	}
 
-		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
-		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
+	@Test
+	public void testGraphqlArguments() throws Exception {
+		Query query = new Query("query BookQuery($title: String!){Book(title: $title){title genre}}");
+		query.put("title", "value");
+		ok(query);
+	}
 
-		Result result = entity.getBody();
-		Assert.assertNotNull(result);
-		Assert.assertTrue(result.getErrors().toString(), result.getErrors().isEmpty());
-		Assert.assertEquals(WAR_AND_PEACE, result.getData().get("Book").get(0).get("title"));
-		Assert.assertEquals("{Book=[{title=War and Peace, genre=NOVEL}]}", result.getData().toString());
+	// Json directly
+	@Test
+	public void testGraphqlArgumentsJson() throws Exception {
+		String json = "{\"query\": \"{Book(title: \\\"title\\\"){title genre}\", \"arguments\": {\"title\": \"title\"}}";
+		mockmvc.perform(post("/graphql").content(json).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testGraphqlArgumentsEmptyString() throws Exception {
+		String json = "{\"query\": \"{Book(title: \\\"title\\\"){title genre}\", \"arguments\": \"\"}";
+		mockmvc.perform(post("/graphql").content(json).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
+	}
+
+	@Test
+	public void testGraphqlArgumentsNull() throws Exception {
+		String json = "{\"query\": \"{Book(title: \\\"title\\\"){title genre}\", \"arguments\": null}";
+		mockmvc.perform(post("/graphql").content(json).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 	}
 }
 
-@Value
-class Result implements ExecutionResult {
-	Map<String, List<Map<String, Object>>> data;
-	List<GraphQLError> errors;
+@Data
+class Query {
+	final String		query;
+	Map<String, Object>	arguments;
+
+	void put(final String key, final Object value) {
+		if (arguments == null)
+			arguments = new HashMap<>();
+		arguments.put(key, value);
+	}
 }
