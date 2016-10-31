@@ -1,6 +1,5 @@
 package com.github.timtebeek.graphql.jpa;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,10 +22,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class GraphQLControllerIT {
-	private static final String WAR_AND_PEACE = "War and Peace";
+	private static final String	WAR_AND_PEACE	= "War and Peace";
 
 	@Autowired
-	TestRestTemplate rest;
+	TestRestTemplate			rest;
 
 	@Test
 	public void testGraphql() {
@@ -45,8 +44,7 @@ public class GraphQLControllerIT {
 	@Test
 	public void testGraphqlArguments() {
 		GraphQLInputQuery query = new GraphQLInputQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
-		query.setVariables(new HashMap<>());
-		query.getVariables().put("title", WAR_AND_PEACE);
+		query.setVariables("{\"title\":\"" + WAR_AND_PEACE + "\"}");
 
 		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
 		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
@@ -61,6 +59,6 @@ public class GraphQLControllerIT {
 
 @Value
 class Result implements ExecutionResult {
-	Map<String, List<Map<String, Object>>> data;
-	List<GraphQLError> errors;
+	Map<String, List<Map<String, Object>>>	data;
+	List<GraphQLError>						errors;
 }

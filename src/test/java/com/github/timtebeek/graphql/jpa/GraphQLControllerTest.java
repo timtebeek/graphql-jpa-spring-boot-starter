@@ -60,7 +60,7 @@ public class GraphQLControllerTest {
 		GraphQLInputQuery query = new GraphQLInputQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
 		Map<String, Object> variables = new HashMap<>();
 		variables.put("title", "value");
-		query.setVariables(variables);
+		query.setVariables(mapper.writeValueAsString(variables));
 		ok(query);
 		verify(executor).execute(query.getQuery(), variables);
 	}
