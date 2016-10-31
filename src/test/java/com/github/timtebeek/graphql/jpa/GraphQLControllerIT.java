@@ -4,6 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.timtebeek.graphql.jpa.GraphQLController.GraphQLInputQuery;
+import graphql.ExecutionResult;
+import graphql.GraphQLError;
+import lombok.Value;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,12 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.github.timtebeek.graphql.jpa.GraphQLController.GraphQLInputQuery;
-
-import graphql.ExecutionResult;
-import graphql.GraphQLError;
-import lombok.Value;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class GraphQLControllerIT {
@@ -32,8 +30,7 @@ public class GraphQLControllerIT {
 
 	@Test
 	public void testGraphql() {
-		GraphQLInputQuery query = new GraphQLInputQuery();
-		query.setQuery("{Book(title: \"" + WAR_AND_PEACE + "\"){title genre}}");
+		GraphQLInputQuery query = new GraphQLInputQuery("{Book(title: \"" + WAR_AND_PEACE + "\"){title genre}}");
 
 		ResponseEntity<Result> entity = rest.postForEntity("/graphql", new HttpEntity<>(query), Result.class);
 		Assert.assertEquals(entity.toString(), HttpStatus.OK, entity.getStatusCode());
@@ -47,8 +44,7 @@ public class GraphQLControllerIT {
 
 	@Test
 	public void testGraphqlArguments() {
-		GraphQLInputQuery query = new GraphQLInputQuery();
-		query.setQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
+		GraphQLInputQuery query = new GraphQLInputQuery("query BookQuery($title: String!){Book(title: $title){title genre}}");
 		query.setVariables(new HashMap<>());
 		query.getVariables().put("title", WAR_AND_PEACE);
 
