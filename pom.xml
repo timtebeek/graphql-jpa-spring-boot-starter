@@ -66,6 +66,12 @@
 			<url>http://dl.bintray.com/jcrygier/maven</url>
 		</repository>
 	</repositories>
+	<scm>
+		<connection>scm:git:https://github.com/timtebeek/graphql-jpa-spring-boot-starter.git</connection>
+		<developerConnection>scm:git:git@github.com:timtebeek/graphql-jpa-spring-boot-starter.git</developerConnection>
+		<url>https://github.com/timtebeek/graphql-jpa-spring-boot-starter</url>
+		<tag>HEAD</tag>
+	</scm>
 	<distributionManagement>
 		<repository>
 			<id>bintray-timtebeek-maven</id>
