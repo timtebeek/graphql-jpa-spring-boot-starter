@@ -66,4 +66,10 @@
 			<url>http://dl.bintray.com/jcrygier/maven</url>
 		</repository>
 	</repositories>
+	<distributionManagement>
+		<repository>
+			<id>bintray-timtebeek-maven</id>
+			<url>https://api.bintray.com/maven/timtebeek/maven/graphql-jpa-spring-boot-starter/;publish=1</url>
+		</repository>
+	</distributionManagement>
 </project>
