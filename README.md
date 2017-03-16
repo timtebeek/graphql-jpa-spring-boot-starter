@@ -7,10 +7,9 @@ to expose JPA Entities through a `/graphql` endpoint.
 
 Many thanks to @jcrygier for the initial hard work; This is mostly just a wrapper.
 
-== Usage ==
+## Usage 
 1. Add the following dependency to your project `pom.xml` along with the repository. 
-
-```pom.xml
+  ```pom.xml
 	<dependencies>
 		<!-- Expose JPA entities using GraphQL -->
 		<dependency>
