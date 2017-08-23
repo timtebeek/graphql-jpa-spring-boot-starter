@@ -61,4 +61,5 @@ public class GraphQLControllerIT {
 class Result implements ExecutionResult {
 	Map<String, List<Map<String, Object>>>	data;
 	List<GraphQLError>						errors;
+	Map<Object, Object>						extensions;
 }
