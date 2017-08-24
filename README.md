@@ -15,7 +15,7 @@ Many thanks to @jcrygier for the initial hard work; This is mostly just a wrappe
 		<dependency>
 			<groupId>com.github.timtebeek</groupId>
 			<artifactId>graphql-jpa-spring-boot-starter</artifactId>
-			<version>0.0.1</version>
+			<version>0.0.2</version>
 		</dependency>
 	</dependencies>
   ...
