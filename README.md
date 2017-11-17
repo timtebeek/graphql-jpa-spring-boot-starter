@@ -28,3 +28,6 @@ Many thanks to @jcrygier for the initial hard work; This is mostly just a wrappe
 	</repositories>
 ```
 2. Start your project and navigate to http://localhost:8080/graphiql.html.
+
+## Warning
+This is terribly fun for exploratory projects but quite possibly a terrible idea when you later want to evolve your API. Proceed with caution; maybe read about REST? :)
